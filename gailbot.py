@@ -19,16 +19,19 @@ from operator import itemgetter
 
 
 # Constants for the audio file length
-CHUNK_SPLIT_MS = 600000
-CHUNK_SPLIT_BYTES = 80000000
+#CHUNK_SPLIT_MS = 600000
+CHUNK_SPLIT_MS = 30000
+#CHUNK_SPLIT_BYTES = 80000000
+CHUNK_SPLIT_BYTES = (10000000/2)
+
 
 
 # Function that verifies that the given file exists.
 def file_exists(filename):
-	if os.path.is_file(filename) == True:
-		return True
-	else:
-		return False
+    if os.path.isfile(filename) == True:
+        return True
+    else:
+        return False
 
 # Function that verifies user input based on the option
 def verify_input(option,files,names):
@@ -146,6 +149,11 @@ def verify_input(option,files,names):
 # Dialogue model options have been disabled for now.
 # This is because Watson is not returning speaker labels.
 def get_type_input():
+
+	# Remove the options file. This point defines first instance
+	# of gailbot.
+	if file_exists("options.json"):
+		os.remove("options.json")
 	print('\n')
 	print('Welcome to Gailbot 2.0!\n')
 	print('Press 1 to transcribe one or two MXF files, with a separate channel for each speaker')
@@ -829,8 +837,9 @@ if __name__ == '__main__':
 	os.rename(out_dir_name+'combined.S.ca',out_dir_name+new_name[:new_name.rfind('.')]+'.S.ca')
 	os.rename(out_dir_name+'combined.csv',out_dir_name+new_name[:new_name.rfind('.')]+'.csv')
 
-
-
+	# Ensure that the multiple instances options file is removed.
+	if file_exists("options.json"):
+		os.remove("options.json")
 
 
 

@@ -61,6 +61,7 @@ from custom_model import custom_model           # Required for custom model-user
 from acoustic_model import custom_model_acoustic 		# Required for acoustic custom model interface.
 from subprocess import call
 import time
+import os.path
 
 # WebSockets
 from autobahn.twisted.websocket import WebSocketClientProtocol, \
@@ -313,6 +314,23 @@ def check_credentials(credentials):
             '"%s" is not a valid format for the credentials ' % credentials)
 
 
+# Function that verifies that the given file exists.
+def file_exists(filename):
+    if os.path.isfile(filename) == True:
+        return True
+    else:
+        return False
+
+# Write to the given csv file.
+def write_to_csv(filename,mode,items):
+    with open(filename,mode) as csvfile:
+        filewriter = csv.writer(csvfile, delimiter=',',
+                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        for line in items:
+            print line
+            filewriter.writerow(line)
+
+
 if __name__ == '__main__':
 
 
@@ -399,19 +417,33 @@ if __name__ == '__main__':
         args.Names = ['Speaker'] 
 
     ###
-    # Running the custom model interface script.
-    model_info = custom_model(username = args.credentials[0],password = args.credentials[1])
-    args.model = model_info['base']
-    if model_info['cust'] != None:
-        args.lm_custom_id = model_info['cust']
-    ###
+    # Checking if the instance file existis. Means multiple instances have been run.
+    if file_exists("options.json") == False:
+        model_info = custom_model(username = args.credentials[0],password = args.credentials[1])
+        args.model = model_info['base']
+        if model_info['cust'] != None:
+            args.lm_custom_id = model_info['cust']
+        acoustic_info = custom_model_acoustic(username = args.credentials[0],password = args.credentials[1])
+        if acoustic_info != None:
+            args.lm_custom_id = model_info['cust']
+        d = {"model_info" : [model_info] , "acoustic_info" : [acoustic_info] }
+        j = json.dumps(d, indent=4)
+        f = open('options.json', 'w')
+        print >> f, j
+        f.close()
+    else:
+        with open('options.json') as options:
+            options_info = json.load(options)
+
+        args.model = options_info["model_info"][0]["base"]
+        if options_info["model_info"][0]["cust"] != None:
+            args.lm_custom_id = options_info["model_info"][0]["cust"]
+
+        if options_info["acoustic_info"][0] != None:
+            args.am_custom_id = acoustic_info
 
     ###
-    # Running the acoustic custom model interface script
-    acoustic_info = custom_model_acoustic(username = args.credentials[0],password = args.credentials[1])
-    if acoustic_info != None:
-    	args.am_custom_id = acoustic_info
-    ###
+
 
     # Adding audio files to analysis queue.
     q = Queue.Queue()
