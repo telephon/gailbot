@@ -19,10 +19,9 @@ from operator import itemgetter
 
 
 # Constants for the audio file length
-#CHUNK_SPLIT_MS = 600000
-CHUNK_SPLIT_MS = 30000
-#CHUNK_SPLIT_BYTES = 80000000
-CHUNK_SPLIT_BYTES = (10000000/2)
+CHUNK_SPLIT_MS = 600000
+CHUNK_SPLIT_BYTES = 80000000
+
 
 
 
