@@ -119,5 +119,5 @@ The [HiLab](https://sites.tufts.edu/hilab/people/), including
 * [Saul Albert](http://twitter.com/saul)
 * [Jan P. Deruiter](http://twitter.com/jpderuiter)
 * [Muhammad Umair](http://sites.tufts.edu/hilab/people)
-* [Julia Mertens] (https://twitter.com/therealjmertens)
+* [Julia Mertens](https://twitter.com/therealjmertens)
 
