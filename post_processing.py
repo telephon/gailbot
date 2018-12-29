@@ -7,6 +7,7 @@ import sys
 import base64                      # necessary to encode in base64
 from subprocess import call
 import itertools
+import process_laughter            # Laughter processing library
 
 
 
@@ -22,6 +23,8 @@ As of yet, the thresholds that can be changed are:
     4. Very large pauses
     5. Latch markers
     6. TCU break point
+    7. min_laugh_acceptance_probability
+    8. min_laugh_audio_len 
 Default values are initialized to global variables.
 '''
 def customize_thresholds(flag):
@@ -35,6 +38,8 @@ def customize_thresholds(flag):
         micropause_high = 0.2
         very_large_pause = 1.0
         TCU_break = 0.1
+        min_laugh_acceptance_probability = 0.4      # Lower values lead to more false positives in laughter detection.
+        min_laugh_audio_len = 0.05
     else:
 
         while True:
@@ -49,6 +54,8 @@ def customize_thresholds(flag):
                 micropause_high = 0.3
                 very_large_pause = 1.1
                 TCU_break = 0.11
+                min_laugh_acceptance_probability = 0.3
+                min_laugh_audio_len = 0.1
                 break
 
             elif option == '2':
@@ -61,6 +68,8 @@ def customize_thresholds(flag):
                 micropause_high = 0.2
                 very_large_pause = 1.0
                 TCU_break = 0.1
+                min_laugh_acceptance_probability = 0.3
+                min_laugh_audio_len = 0.1
                 break
 
             elif option == '3':
@@ -73,6 +82,8 @@ def customize_thresholds(flag):
                 micropause_high = 0.1
                 very_large_pause = 0.9
                 TCU_break = 0.09
+                min_laugh_acceptance_probability = 0.3
+                min_laugh_audio_len = 0.1
                 break
 
             elif option == '4':
@@ -95,6 +106,11 @@ def customize_thresholds(flag):
                 very_large_pause = get_float_int_input()
                 print('Specify TCU break-off threshold')
                 TCU_break = get_float_int_input()
+                print('Specify minimum probability after which laughter is accepted (0 to 1)'
+                    ' .Lower values lead to more false positives')
+                min_laugh_acceptance_probability = get_float_int_input()
+                print('Specify the minimum length of audio to be classified as laughter')
+                min_laugh_audio_len  = get_float_int_input()
                 break
 
             elif option == '5':
@@ -107,9 +123,13 @@ def customize_thresholds(flag):
                 micropause_high = 0.2
                 very_large_pause = 1.0
                 TCU_break = 0.1
+                min_laugh_acceptance_probability = 0.3
+                min_laugh_audio_len = 0.1
                 break
 
-    thresholds = {'ng': normal_gap, 'll': latch_low, 'lh' : latch_high, 'npl' : normal_pause_low, 'nph' : normal_pause_high, 'ml' : micropause_low, 'mh' : micropause_high, 'vlp' : very_large_pause, 'break' : TCU_break}
+    thresholds = {'ng': normal_gap, 'll': latch_low, 'lh' : latch_high, 'npl' : normal_pause_low, 
+    'nph' : normal_pause_high, 'ml' : micropause_low, 'mh' : micropause_high, 'vlp' : very_large_pause, 
+    'break' : TCU_break, 'laugh_prob' : min_laugh_acceptance_probability, 'min_laugh_len' : min_laugh_audio_len}
     return thresholds
 
 # Function that declares thresholds as global variables
@@ -123,6 +143,8 @@ def dec_global_thresholds(thresh_dict):
     global micropause_high
     global very_large_pause
     global TCU_break
+    global min_laugh_acceptance_probability
+    global min_laugh_audio_len
     normal_gap = thresh_dict['ng']
     latch_low = thresh_dict['ll']
     latch_high = thresh_dict['lh']
@@ -132,6 +154,9 @@ def dec_global_thresholds(thresh_dict):
     micropause_high = thresh_dict['mh']
     very_large_pause = thresh_dict['vlp']
     TCU_break = thresh_dict['break']
+    min_laugh_acceptance_probability = thresh_dict['laugh_prob']
+    min_laugh_audio_len = thresh_dict['min_laugh_len']
+
 
 
 # Helper function that gets float or interger input only
@@ -192,9 +217,32 @@ def read_data_double(file1,file2):
 
 # Function that does pos-processing on the seperate 
 # speaker CSV files.
-def seperate_postprocessing(all_lines,thresh_dict):
+def seperate_postprocessing(all_lines,thresh_dict, audio_file):
     all_lines = remove_confidence(all_lines)
     all_lines = create_utterances(all_lines,thresh_dict['break'])
+    all_lines = laughter_analysis(all_lines,thresh_dict,audio_file)
+    return all_lines
+
+# Function performing laughter analysis on the audio
+def laughter_analysis(all_lines,thresh_dict,audio_file):
+
+    instances = process_laughter.segment_laugh(audio_file,'./model.h5','./',
+        thresh_dict['laugh_prob'],thresh_dict['min_laugh_len'])
+
+    count = 0
+    name = all_lines[0][0]
+    trans = '[^ %LAUGHTER]'
+    for instance in instances:
+        while count < len(all_lines) - 1:
+            curr_line = all_lines[count]
+            start_time = curr_line[1]
+            if instance[0] < start_time:
+                new_line = [name,instance[0],instance[1],trans]
+                all_lines.insert(count,new_line)
+                count +=  1
+                break
+            count += 1
+
     return all_lines
 
 
@@ -209,9 +257,6 @@ def remove_confidence(all_lines):
 # Function that creates utterances based on a threshold for
 # the individual speakers.
 def create_utterances(all_lines,threshold):
-
-
-
     new_lines = []
     count = 0
     new = True

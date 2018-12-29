@@ -63,8 +63,6 @@ Use the following command to run gailbot:
 
 **NOTE:** Always copy and paste the custom model ID without punctuation marks when/if propmted by Gailbot.
 
-**NOTE:** If you are transcribing a file on a USB/remote drive under osX, use the /Volumes/your_drive/path... file path. The final audio files will be encoded and placed in your current 'gailbot' directory. 
-
 ## Options
 
 ## Flags
@@ -119,5 +117,4 @@ The [HiLab](https://sites.tufts.edu/hilab/people/), including
 * [Saul Albert](http://twitter.com/saul)
 * [Jan P. Deruiter](http://twitter.com/jpderuiter)
 * [Muhammad Umair](http://sites.tufts.edu/hilab/people)
-* [Julia Mertens](https://twitter.com/therealjmertens)
 

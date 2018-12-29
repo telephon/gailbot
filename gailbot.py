@@ -4,6 +4,12 @@
 	generates new-file names and calls the STT script, the 
 	customization interface script and the post-processing 
 	script.
+
+
+	Updated 12/18/18
+		Gailbot now has a basic laughter detection script 
+		and adds suspected laughter as comments in the final
+		transcript.
 '''
 
 import os.path
@@ -21,6 +27,7 @@ from operator import itemgetter
 # Constants for the audio file length
 CHUNK_SPLIT_MS = 600000
 CHUNK_SPLIT_BYTES = 80000000
+
 
 
 
@@ -198,7 +205,7 @@ def chunk_audio(filename,count):
 
 
 
-# Funcntion sendign different calls to Watson.
+# Funcntion sending different calls to Watson.
 def send_call(credentials,filenames,speaker_names, option,num_files,new_name):
 	if option == '1' or option == '2':
 		command = "python STT.py -credentials "+credentials[0]+":"+credentials[1]+" -model en-US_BroadbandModel"\
@@ -643,6 +650,13 @@ if __name__ == '__main__':
 	# Changing the audio files if not in wav or mxf format or mp3
 	args.in_files = extract_convert_wav(args.in_files,out_dir_name)
 
+	# Saving the original audio files for laughter analysis
+	if (len(args.in_files) == 2):
+		orig1 = args.in_files[0]
+		orig2 = args.in_files[1]
+	elif (len(args.in_files) == 1):
+		orig1 = args.in_files[0]
+
 	# Getting audio from MXF files
 	MXF = True
 	for file in args.in_files:
@@ -802,8 +816,8 @@ if __name__ == '__main__':
 	if len(args.in_files) > 1:
 		all_data = post_processing.read_data_double(out_dir_name+'separate-1.csv',out_dir_name+'separate-2.csv')
 		if len(all_data[0]) > 0 and len(all_data[1]) > 0:
-			all_data[0] = post_processing.seperate_postprocessing(all_data[0],threshold_dict)
-			all_data[1] = post_processing.seperate_postprocessing(all_data[1],threshold_dict)
+			all_data[0] = post_processing.seperate_postprocessing(all_data[0],threshold_dict,orig1)
+			all_data[1] = post_processing.seperate_postprocessing(all_data[1],threshold_dict,orig2)
 			#os.remove('separate-1.csv')
 			#os.remove('separate-2.csv')
 			writeCSV(all_data[0],out_dir_name+'speaker-1-new.csv')
@@ -816,7 +830,7 @@ if __name__ == '__main__':
 
 	elif len(args.in_files) == 1:
 		all_data = post_processing.read_data_single(out_dir_name+'separate-1.csv')
-		all_data = post_processing.seperate_postprocessing(all_data,threshold_dict)
+		all_data = post_processing.seperate_postprocessing(all_data,threshold_dict,orig1)
 		#os.remove('separate-1.csv')
 		writeCSV(all_data,out_dir_name+'separate-1-new.csv')
 		combined_output = post_processing.combined_post_processing_single(all_data,threshold_dict)
