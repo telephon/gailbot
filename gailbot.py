@@ -25,8 +25,10 @@ from operator import itemgetter
 
 
 # Constants for the audio file length
-CHUNK_SPLIT_MS = 600000
-CHUNK_SPLIT_BYTES = 80000000
+#CHUNK_SPLIT_MS = 600000
+#CHUNK_SPLIT_BYTES = 80000000
+CHUNK_SPLIT_MS = 60000
+CHUNK_SPLIT_BYTES = 800000
 
 
 
@@ -669,16 +671,21 @@ if __name__ == '__main__':
 			file1 = new_path+'-speaker1.wav'
 			file2 = new_path+"-speaker2.wav"
 			args.in_files = [file1, file2]
+			orig1 = args.in_files[0]
+			orig2 = args.in_files[1]
 		elif trans_type == '4':
 			new_path = extract_audio_single(args.in_files[0],out_dir_name)
 			path = new_path+'-speaker.wav'
 			args.in_files = [path]
+			orig1 = args.in_files[0]
 		elif trans_type == '2':
 			new_path = extract_audio_single(args.in_files[0],out_dir_name)
 			file1 = new_path+'-speaker.wav'
 			new_path = extract_audio_single(args.in_files[1],out_dir_name)
 			file2 = new_path+"-speaker.wav"
 			args.in_files = [file1, file2]
+			orig1 = args.in_files[0]
+			orig2 = args.in_files[1]
 
 
 	# Chunking audio files larger than 50 minutes.
