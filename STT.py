@@ -383,6 +383,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+
     if args.fileInput != None:
     	print("This version does not allow file input")
     	print("Exiting...")

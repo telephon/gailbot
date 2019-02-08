@@ -25,10 +25,9 @@ from operator import itemgetter
 
 
 # Constants for the audio file length
-#CHUNK_SPLIT_MS = 600000
-#CHUNK_SPLIT_BYTES = 80000000
-CHUNK_SPLIT_MS = 60000
-CHUNK_SPLIT_BYTES = 800000
+CHUNK_SPLIT_MS = 600000
+CHUNK_SPLIT_BYTES = 80000000
+
 
 
 
@@ -211,7 +210,7 @@ def chunk_audio(filename,count):
 def send_call(credentials,filenames,speaker_names, option,num_files,new_name):
 	if option == '1' or option == '2':
 		command = "python STT.py -credentials "+credentials[0]+":"+credentials[1]+" -model en-US_BroadbandModel"\
-					" -files "+file1+" "+file2+ " -names "+speaker_names[0]+" "+speaker_names[1]+" -audio "+new_name
+					" -files "+filenames[0]+" "+filenames[1]+ " -names "+speaker_names[0]+" "+speaker_names[1]+" -audio "+new_name
 		os.system(command)
 	elif (option == '3' or option == '7') and num_files == 2:
 		command = "python STT.py -credentials "+credentials[0]+":"+credentials[1]+" -model en-US_BroadbandModel"\
@@ -720,12 +719,16 @@ if __name__ == '__main__':
 				file1name = orig1[:orig1.rfind('.')]+file1name
 				file2name = "-chunk{0}.wav".format(i)
 				file2name = orig2[:orig2.rfind('.')]+file2name
+
 				args.in_files = []
 				args.in_files = [file1name, file2name] 
+
 				if os.path.exists('0.json.txt'):
 					os.remove('0.json.txt')
 				if os.path.exists('1.json.txt'):
 					os.remove('1.json.txt')
+				print("FINAL FILENAMES",args.in_files)
+
 				send_call(args.credentials,args.in_files,args.Names,trans_type,2,new_name)	
 				# Building the individual speaker CSV files.
 				with open('0.json.txt') as speaker1_data:
