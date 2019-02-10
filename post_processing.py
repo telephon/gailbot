@@ -537,7 +537,7 @@ def overlaps(all_lines):
                         y = (y/100)*len(all_lines[count][-1])
                         y = int(round(y))
                         utt_1_overlap_end = y
-                        if utt_1_overlap_start - 0 <= limit:
+                        if utt_1_overlap_end - 0 <= limit:
                             all_lines[count][-1] = orig1
                             all_lines[count+1][-1] = orig2
                             count+=1
