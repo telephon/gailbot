@@ -448,7 +448,10 @@ def build_seperate_CSV(json1,json2,name1,name2):
     conf_data1 = []
     for item in speaker1_result:
         sub_item = item['results'][0]['alternatives'][0]['timestamps']
-        confdata = item['results'][0]['alternatives'][0]['word_confidence']
+        if not 'word_confidence' in item['results'][0]['alternatives'][0]:
+        	confdata = item['results'][0]['alternatives'][0]['word_confidence']
+        else:
+        	confdata = [['None',0.1]]
         for subdata in sub_item:
             data1.append(subdata)
         for conf in confdata:
@@ -458,11 +461,23 @@ def build_seperate_CSV(json1,json2,name1,name2):
     conf_data2 = []
     for item in speaker2_result:
         sub_item = item['results'][0]['alternatives'][0]['timestamps']
-        confdata = item['results'][0]['alternatives'][0]['word_confidence']
+        if not 'word_confidence' in item['results'][0]['alternatives'][0]:
+        	confdata = item['results'][0]['alternatives'][0]['word_confidence']
+        else:
+        	confdata = [['None',0.1]]
         for subdata in sub_item:
             data2.append(subdata)
         for conf in confdata:
         	conf_data2.append(conf)
+
+
+    # Assigns 0 to confidence values if Watson does not 
+    # return confidence values for any reason.
+    if len(conf_data1) != len(data1):
+    	conf_data1 = [["None",0]] * len(data1)
+
+    if len(conf_data2) != len(data2):
+    	conf_data2 = [["None",0]] * len(data2)
 
     for res1,conf1 in map(None,data1,conf_data1):
         trans1 = " "+res1[0]+" "
