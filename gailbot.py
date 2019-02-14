@@ -208,6 +208,8 @@ def chunk_audio(filename,count):
 
 # Funcntion sending different calls to Watson.
 def send_call(credentials,filenames,speaker_names, option,num_files,new_name):
+	for x in range(len(filenames)):
+		filenames[x] = filenames[x].replace(" ","\\ ")
 	if option == '1' or option == '2':
 		command = "python STT.py -credentials "+credentials[0]+":"+credentials[1]+" -model en-US_BroadbandModel"\
 					" -files "+filenames[0]+" "+filenames[1]+ " -names "+speaker_names[0]+" "+speaker_names[1]+" -audio "+new_name
@@ -290,7 +292,6 @@ def extract_audio_single(in_files,out_dir_name):
 
 # Fucntion that overlays the audio
 def overlay(file1,file2,out_dir_name):
-
 	pre_1 = ''
 	if file1.find('/') != -1:
 		pre_1 = file1[:file1.rfind("/")+1]
@@ -304,17 +305,24 @@ def overlay(file1,file2,out_dir_name):
 		else:
 			audio1 = file1[:file1.rfind('.')]
 		if file1.find('/') != -1:
-			audio2 = file2[file2.rfind('/')+1:file1.rfind('.')]
+			audio2 = file2[file2.rfind('/')+1:file2.rfind('.')]
 		else:
 			audio2 = file2[:file2.rfind('.')]
 		new_name = audio1+"-"+audio2+'-combined.wav'
 		audio1 = pre_1+audio1 +'.wav'
 		audio2 = pre_2+audio2 +'.wav'
-		print(audio1)
-		print(audio2)
 
-		command = "ffmpeg -i "+audio1+" -i "+audio2+ " -filter_complex amix=inputs=2:duration=longest:dropout_transition=3 "+out_dir_name+new_name
+		# Making sure that pathname spaces are handled
+		audio1 = audio1.replace(" ","\\ ")
+		audio2 = audio2.replace(" ","\\ ")
+
+		string = out_dir_name+new_name
+		string = string.replace(" ","\\ ")
+		command = "ffmpeg -i "+audio1+" -i "+audio2+ " -filter_complex amix=inputs=2:duration=longest:dropout_transition=3 "+string
 		os.system(command)
+
+		# making sure pathanme spaces are handled
+		new_name = new_name.replace(" ","\\ ")
 		return new_name
 
 
@@ -865,8 +873,9 @@ if __name__ == '__main__':
 		#os.remove('separate-1.csv')
 
 	# Creating and indenting the CA files.
-	os.system('./jeffersonize chat2calite '+out_dir_name+'combined.cha')
-	os.system('./indent '+out_dir_name+'combined.S.ca')
+ 
+	os.system('./jeffersonize chat2calite '+out_dir_name.replace(" ", r"\ ")+'combined.cha')
+	os.system('./indent '+out_dir_name.replace(" ", r"\ ")+'combined.S.ca')
 	os.remove(out_dir_name+'combined.S.ca')
 	os.rename(out_dir_name+'combined.S.indnt.cex',out_dir_name+'combined.S.ca')
 
