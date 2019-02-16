@@ -827,8 +827,10 @@ def pauses(all_lines):
                 all_lines.insert(count,new_item)
                 pos = prev_trans.rfind('.')
                 if pos != -1:
-                    if prev_trans[pos+1].isnumeric() == False or prev_trans[pos+1] != ')':
-                        prev_trans = prev_trans[:pos-1]+prev_trans[pos+1:]
+                    # Ensure that the string position exists.
+                    if (pos+1 < len(prev_trans)):
+                        if prev_trans[pos+1].isnumeric() == False or prev_trans[pos+1] != ')':
+                            prev_trans = prev_trans[:pos-1]+prev_trans[pos+1:]
                 all_lines[count-1][-1] = prev_trans
         count +=1
     return all_lines
