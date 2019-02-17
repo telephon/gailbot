@@ -456,7 +456,7 @@ def build_seperate_CSV(json1,json2,name1,name2):
     conf_data1 = []
     for item in speaker1_result:
         sub_item = item['results'][0]['alternatives'][0]['timestamps']
-        if not 'word_confidence' in item['results'][0]['alternatives'][0]:
+        if 'word_confidence' in item['results'][0]['alternatives'][0]:
         	confdata = item['results'][0]['alternatives'][0]['word_confidence']
         else:
         	confdata = [['None',0.1]]
@@ -469,7 +469,7 @@ def build_seperate_CSV(json1,json2,name1,name2):
     conf_data2 = []
     for item in speaker2_result:
         sub_item = item['results'][0]['alternatives'][0]['timestamps']
-        if not 'word_confidence' in item['results'][0]['alternatives'][0]:
+        if 'word_confidence' in item['results'][0]['alternatives'][0]:
         	confdata = item['results'][0]['alternatives'][0]['word_confidence']
         else:
         	confdata = [['None',0.1]]
