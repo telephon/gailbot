@@ -168,7 +168,7 @@ def get_type_input():
 	print('Press 3 to transcribe two wav files corresponding to different speakers in one conversation')
 	#print('Press 4 to transcribe a single MXF file with a single channel with using dialogue model')
 	#print('Press 5 to transcribe a single wav using the dialogue model')
-	#print('Press 6 to transcribe a single mp4,mov,mv4, or avi file using the dialogue model')
+	print('Press 6 to transcribe a single mp4,mov,mv4, or avi file using the dialogue model')
 	print('Press 7 to transcribe two mp4,mov,mv4, or avi files corresponding to the same conversation')
 	#print('Press 8 to transcribe a single mp3 file using the dialogue model')
 	print('Press 9 to transcribe two mp3 files as part of the same conversation')
@@ -585,9 +585,9 @@ def extract_convert_wav(files,out_dir_name):
 		ext = file[file.rfind(".")+1:]
 		command = "ffmpeg -i "+file+ " -acodec pcm_s16le -ar 16000 "+out_dir_name+name+".wav"
 		os.system(command)
-		new_files.append(name+".wav")
+		new_files.append(out_dir_name+name+".wav")
 
-	return out_dir_name+new_path
+	return new_files
 
 
 # Function that creates a new folder based in the input
@@ -671,7 +671,8 @@ if __name__ == '__main__':
 
 	args.credentials = [args.credentials[:args.credentials.rfind(':')] ,args.credentials[args.credentials.rfind(":")+1:]]
 
-	# Changing the audio files if not in wav or mxf format or mp3
+	# Changing the audio files if not in wav or mxf format or mp3]
+	print('args.in_files',args.in_files)
 	args.in_files = extract_convert_wav(args.in_files,out_dir_name)
 
 	# Saving the original audio files for laughter analysis
@@ -750,7 +751,6 @@ if __name__ == '__main__':
 					os.remove('0.json.txt')
 				if os.path.exists('1.json.txt'):
 					os.remove('1.json.txt')
-				print("FINAL FILENAMES",args.in_files)
 
 				send_call(args.credentials,args.in_files,args.Names,trans_type,2,new_name)	
 				# Building the individual speaker CSV files.
@@ -869,7 +869,7 @@ if __name__ == '__main__':
 		combined_output = post_processing.combined_post_processing_single(all_data,threshold_dict)
 		writeCSV(combined_output,out_dir_name+'combined.csv')
 		new_name = args.in_files[0]
-		post_processing.build_CHAT(combined_output,'SP1','SP2',new_name[:new_name.rfind('.')],cust_headers,out_dir_name)
+		post_processing.build_CHAT(combined_output,'SP1','SP2',new_name,cust_headers,out_dir_name)
 		#os.remove('separate-1.csv')
 
 	# Creating and indenting the CA files.
@@ -880,13 +880,15 @@ if __name__ == '__main__':
 	os.rename(out_dir_name+'combined.S.indnt.cex',out_dir_name+'combined.S.ca')
 
 	# Renaming the CHAT, CA, and combined-csv files.
-	os.rename(out_dir_name+'combined.cha',out_dir_name+new_name[:new_name.rfind('.')]+'.cha')
-	os.rename(out_dir_name+'combined.S.ca',out_dir_name+new_name[:new_name.rfind('.')]+'.S.ca')
-	os.rename(out_dir_name+'combined.csv',out_dir_name+new_name[:new_name.rfind('.')]+'.csv')
+	os.rename(out_dir_name+'combined.cha',out_dir_name+new_name+'.cha')
+	os.rename(out_dir_name+'combined.S.ca',out_dir_name+new_name+'.S.ca')
+	os.rename(out_dir_name+'combined.csv',out_dir_name+new_name+'.csv')
+
 
 	# Ensure that the multiple instances options file is removed.
 	if file_exists("options.json"):
 		os.remove("options.json")
+
 
 
 

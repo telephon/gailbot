@@ -231,7 +231,7 @@ def laughter_analysis(all_lines,thresh_dict,audio_file):
 
     count = 0
     name = all_lines[0][0]
-    trans = '[^ %LAUGHTER]'
+    trans = '[^ %LAUGHTER ]'
     for instance in instances:
         while count < len(all_lines) - 1:
             curr_line = all_lines[count]
@@ -938,7 +938,7 @@ def build_CHAT(all_lines,name1,name2,audio_name,flag,out_dir_name):
         outfile.write(u'@Options:\tCA\n')
         outfile.write(u'@ID:\t'+headers['language']+'|'+headers['corpus_name']+'|'+unicode(id1)+'||'+headers['speaker1_gender']+'|||'+headers['role1']+'|||'+'\n')
         outfile.write(u'@ID:\t'+headers['language']+'|'+headers['corpus_name']+'|'+unicode(id2)+'||'+headers['speaker2_gender']+'|||'+headers['role2']+'|||'+'\n')
-        outfile.write(u'@Media:\t'+unicode(audio_name)+u',audio\n')
+        outfile.write(u'@Media:\t'+unicode(audio_name)+u', audio\n')
         outfile.write(u'@Comment:\t'+headers['corpus_name']+', '+headers['corpus_location']+'\n')
         outfile.write(u'@Transcriber:\tSTT_system\n@Location:\t'+headers['location']+'\n@Room Layout:\t'+headers['room_layout']+'\n')
         outfile.write(u'@Situation:\t'+headers['situation']+'\n@New Episode\n')
