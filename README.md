@@ -45,6 +45,10 @@ Then install the following libraries:
 
 * pip install Watson-developer-cloud
 * pip install pydub
+* pip install progressbar
+* pip install librosa
+* pip install keras
+* pip install --upgrade tensorflow
 
 4. Create an account with IBM so you can use Watson's speech-to-text service:
 * You can sign up for a trial account here: console.bluemix.net/catalog/services/speech-to-text
