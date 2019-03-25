@@ -35,7 +35,7 @@ b) Using the binary:
 
 3. Build prerequisites
 
-Gailbot is written in python, you'll need version >=2.1.15
+Gailbot is written in python, you'll need version >=2.7.15
 
 You'll also need some python libraries, which can be installed using python's pip packaing system. If you don't have it, you can install it with:
 
